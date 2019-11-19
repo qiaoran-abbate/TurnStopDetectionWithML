@@ -73,4 +73,125 @@ After a bit of research, we realized that the vehicle locations are recorded in 
 Each GPS text file contain thousands of data, to increase the run-time efficiency of our algorithm, a series of techniques are used to remove duplicated or low-value (do not provide much information) data points. 
 
 #### Remove data point when car is stopped or parked
+If the vehicle is stopped or parked,  Arduino sensor records multiple data points with the same longitude and latitude measures. Essentially, the additional information served no purpose but provide the time difference. Therefore, we designed algorithm remove all but the first and last occurrences of the stopped or parked data points.
+
+```python
+# if the first and second records are the same, remove the 1st 
+first_coordinate = df.iloc[0,:2].tolist()
+second_coordinate = df.iloc[1,:2].tolist()
+if first_coordinate == second_coordinate:
+    df = df.drop(df.index[0])
+```
+When the trip first starts up, the vehicle is not moving. The previous algorithm will preserve the first and last occurrences of any stop, therefore, when a car is first started up in the parking lot or the drive way, it will be marked as a stop. To address this issue, first and second data points within the data-set will be evaluated, and if they are the same, the first records will be removed, as shown in listing \ref{lst:start}. 
+
+#### Remove data point at the end of the journey
+```python
+# if the last and second last records are the same, remove the last 
+last_coordinate = df.iloc[-1, :2].tolist()
+second_last_coordinate = df.iloc[-2, :2].tolist()
+if last_coordinate == second_last_coordinate:
+    df = df.drop(df.index[-1])
+```
+Similarity, when the vehicle stops moving when it reaches the destination. The previous algorithm will recognize this as a stopping point, we would like to avoid this by removing the last data point if it is the same the the second to last point, shown as in listing \ref{lst:end}. 
+
+#### Sub-sampling
+```python
+ # book-keeping variables 
+list_of_straight_index = []
+old_speed = df.iloc[0]['Kn_speed']
+# loop through the dataframe
+for index, row in df.iterrows():
+    speed = row['speed_Kn']
+    # keep track of the indexes where the speed was constant
+    if speed == old_speed:
+	list_of_straight_index.append(index)
+    else:
+	old_speed = speed # update the old speed
+# stepping through the list
+SAMPLE_STEPS = 3 # drop 1 data point for every 3
+for index in range(0, len(list_of_straight_index), 3):
+    df.drop(list_of_straight_index[index], inplace=True)
+```
+If the vehicle is traveling in a straight line, we could ignore some points. Since we are using speed as a criteria to for stop and turn detection, we know for certain that sub-sampling the data will create problems for the algorithms. However, if the speed is constant, there is no way a turn or a stop happened, so we can safely remove some data points in these regions, as shown in listing \ref{lst:straight}. 
+
+### 2.2 Anomaly Removal
+
+#### Sensor Error Based Anomaly
+
+```python
+old_longitude, old_latitude = df.iloc[0]['lon'], df.iloc[0]['lat']
+for index, row in df.iterrows():
+longitude, latitude, speed = row['lon'], row['lat'], row['speed_Kn']
+temp = get_haversion(pos1=[latitude, longitude], pos2=[old_latitude, old_longitude])
+if temp > 5:
+    # print(old_latitude, old_longitude, latitude, longitude, temp)
+    df.drop(index, inplace=True)
+# book-keeping for the last
+old_longitude = longitude
+old_latitude = latitude
+```
+The Arduino sensor sometimes malfunctions, and starts recording GPS values that jump all over the place. This happens when the GPS loose connection while the vehicle is at uncharted territory or a region with poor signal such as tunnels. The resulting data point often shows unrealistic speed and distance maneuver. Which is exactly how we screen and remove these anomalies. Listing \ref{lst:jump} shows that we've set the haversion distance to 5 mile for all the adjacent data points as a threshold. Any vehicle moving further than 5 miles in 1 timestamp will be removed as an anomaly. 
+
+#### IO Based Anomaly
+```python
+for row in gps_data:
+if len(row) != 0:
+# -----------------------------------------------------------------------------
+#  The Arduino sometimes burps, and writes two GPS sentences to the same line of the data file. Detect and ignore these anomalies. Otherwise it looks like the car jumps from one side of the planet to the other side.
+# -----------------------------------------------------------------------------
+# take the first entry if there are 2 entries per line and A represent valid data points
+if row[0] == '$GPRMC' and row[2] == 'A' and len(row) == 13:
+    twodArray.append(row[:13])
+```
+
+The Arduino's IO sometimes fails, and writes two GPS sentences to the same line of the data file. In this case, we would just take the first GPS sentences if its validate. Additionally, some files have outright the wrong format for some of the GPS records, "2019\_03\_25\_\_2228\_22.txt" is one such example. Together, we've developed the algorithm shown in listing \ref{lst:io} to handling all the anomalies mentioned. 
+
+### 2.3 Edge-Case Handling
+
+#### When there isn't enough data
+
+```python
+# make sure it still has enough data
+for row in gps_data:
+if len(row) != 0:
+	if df.shape[0] < 4:  return df, df, False
+df_with_begining_and_ending = df
+```
+During the process of removing duplicates and anomalies, the data frame become increasingly smaller. Sometimes, it reaches a point where there are only 2 data point left, which causes all sorts of problem with the data cleaning algorithms, thus we have to include a condition check to make sure there are enough data remaining, as shown in listing \ref{lst:enough}.
+
+## 3. Stop Detection 
+```python
+# book-keeping variables
+stop_lights_list = []
+slow_pt, fast_pt = 0, 0
+# iterate the slow point as long as it is not at the end
+while slow_pt < df.shape[0]:
+# initialize the time variables
+start_time, end_time = -1, -1
+# update the start time with slow pointer if it's < 10 mph
+if df.iloc[slow_pt]['speed_Kn'] <= 10:
+    start_time = df.iloc[slow_pt]['utc']
+else:
+    slow_pt += 1
+    continue
+# increment the faster point as long the data point speed < 10mph, and update the end time
+for fast_pt in range(slow_pt+1, df.shape[0]):
+    if df.iloc[fast_pt]['speed_Kn'] <= 10:
+	end_time = df.iloc[fast_pt]['utc']
+    else:
+	break
+# compute the time duration between the 2 times
+duration = time_difference(end_time = end_time, start_time = start_time)
+# if the duration is less than 30 second, record the stopping coordinate
+if duration >= 30:
+    stop_lights_list.append([df.iloc[fast_pt-1]['lon'], df.iloc[fast_pt-1]['lat'], df.iloc[fast_pt-1]['speed_Kn']])
+# update the slow point for next windowing 
+slow_pt = fast_pt + 1
+```
+We used a threshold classifier for the stop detection. The thought process was to iterate through the data-set with a fast and slow pointer, where faster point always marks the start point of the vehicle's speed become less than 10 miles per hour, while the fast point marks the end point. If the two pointers' records have a duration for less than 30 seconds, then we will mark this as a stop point, as shown in listing \ref{lst:stop}. The algorithm is relatively robust, and only misses on the stops that's extremely sudden (flooring the break paddle). We could incorporate single point below 10 mph, but it was not necessary since the stop eventually gets picked up from another GPS text tile.
+
+## 4. Turn Detection
+
+### 4.1 Right Turn
+The \$GPRMC message generated by Arduino contains the angle of the car with respect to true North. The classifier to detect turns uses the difference in the angles of two different data points over a sliding window of 15 points. If the angle is greater than equal to 100 or less than equal to 40, it is classified as a right turn.
 
