@@ -1,4 +1,4 @@
-# The zip file contains: 
+# The Content: 
 
 1. example path file 
 	- path_for_one_file_2019_03_04__RIT_to_HOME.kml
@@ -52,7 +52,7 @@ KML file can be viewed on Google Earth and the path taken can be visualized. For
 such as multiple points at the same location, incorrect GPS data generated when Arduino loses its mind, data generated
 when is the car is not moving, data generated when GPS status is invalid and the trip is just or ending is removed. It is
 explained in depth in section 2. The next part of the project was to detect turns and stop lights using classifiers and mark them. It is described in sections 3 and 4 in more detail. For the next part, batch processing was done on all the files to get a combined path, stops and turns. This data had multiple points for a single turn, so agglomeration was performed on
-the stops and turns to get just one point that defined the turn or stop the best. If a point was classified as both a stop and a turn, it was rectified to present only turns. It is explained in section 5. Section 6 and 7 shows screenshots of the result of the KML file. Section 9 talks about the contribution of each member. And section 10 and 11, discuss and conclude the project. Section 11 discusses future work.
+the stops and turns to get just one point that defined the turn or stop the best. If a point was classified as both a stop and a turn, it was rectified to present only turns. It is explained in section 5. Section 6 and 7 shows screenshots of the result of the KML file. Section 9 and 10, discuss and conclude the project, and section 11 discusses future work.
 
 ## 2. Converting GPS to KML
 Two prerequisites for the successful conversion between the GPS data and the KML files are, first, understanding how
