@@ -274,12 +274,12 @@ Some of the parameters used for the clustering agglomerations are linkage, conne
 Some of the problems we faced mostly had to do with, one, learning how to building a KML file and resolving any errors that pops up, two, finding an adequate classifier to detect stops and turns. To resolve them, lots of trail and error and manual-checking the coordinates were necessary. Prior to the algorithms, we used a series of data processing techniques that removed duplicates, anomalies. Additionally, we applied sub-sampling filter on the data to ensure greater efficiency. 
 
 
-# 8. Conclusion
+# 10. Conclusion
 This project brought about an understanding in many different fronts. Some of them being that it helped to learn how to use unstructured data and bring it to a structured format that can be used in data mining. It also helped in understanding how to use different concepts learned in class such as Agglomeration, building classifiers, and data cleaning. We also learned how to build a basic KML file. Some of the challenges presented in the data processing and visualization, are quite transferable. Meaning that, the techniques used to resolve these problems, can be used in a wide range of problem in the future project. 
 
 This project can act as building blocks to commercial applications such as turn-by-turn navigation system, traffic congestion maps, and find paths that more cost-effective or routes that the shortest or paths that have the least travel time. An example of a cost-effective route is a path without left turns. This concept is used by UPS to be more productive.Overall, we enjoyed the project, and gained confidence in handling large complex problems. Following the head, body, tail design principle, any challenges can be divided and conquered with patience and the willing of learning new skills. 
 
-# 9. Future Work
+# 11. Future Work
 With limited time, we are only able to detect the stop and turns with around 90\% accuracy. However, for future work, a more robust and run-time efficient classifier to detect turns and stops can be built such as automatically adjust the threshold of the classifiers based on accuracy rate. Better yet, we can even try to model a LSTM network for the data-set. 
 
 
