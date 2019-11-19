@@ -253,9 +253,9 @@ Some of the parameters used for the clustering agglomerations are linkage, conne
 
 ## 6. Results of A Path file
 
-![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/hazard.png) Figure 9 Screenshot of all KML path 
+![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/path.png) Figure 9 Screenshot of all KML path 
 
-![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/hazard_for_one.png) Figure 10 Screenshot of one KML path 
+![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/onepath.png) Figure 10 Screenshot of one KML path 
 
 # 7. Results if a Hazard File
 
