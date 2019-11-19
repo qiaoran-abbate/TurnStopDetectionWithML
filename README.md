@@ -214,9 +214,9 @@ The Numpy arrays are returned as a variable to the batch processing main python 
 
 .		 | Dendrograms             |  Stop Clusters
 ----------------|:-------------------------:|:-------------------------:
-Stop    	| ![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/stop_dendrogram.jpg)  |  ![](https://...Ocean.png)
-Left Turn    	| ![](https://...Dark.png)  |  ![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/stop_cluster.jpg)
-Right Turn	| ![](https://...Dark.png)  |  ![](https://...Ocean.png)
+Stop    	| ![Figure 3](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/stop_dendrogram.jpg)  |  ![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/stop_cluster.jpg)
+Left Turn    	| ![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/left_turn_dendrogram.jpg)  |  ![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/left_turn_cluster.jpg)
+Right Turn	| ![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/right_turn_dendrogram.jpg)  |  ![](https://github.com/qiaoran-abbate/TurnStopDetectionWithML/blob/master/IMG/left_turn_cluster.jpg)
 
 
 
