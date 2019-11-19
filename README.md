@@ -59,10 +59,10 @@ Two prerequisites for the successful conversion between the GPS data and the KML
 to GPS data is organized and stored in the text file, second, understand how tags are utilized in the KML files, such as
 path vs. points.
 
-"""
-# sample data from the GPS text f i l e
+''' python
+sample data from the GPS text file
 $GPRMC,233554.400 ,A,4305.1642 ,N,07740.8665 ,W,0.01 ,195.70 ,040319 , , ,D*75
 $GPGGA,233554.600 ,4305.1642 ,N,07740.8665 ,W,2 ,10 ,0.93 ,165.9 ,M, 􀀀34.4 ,M,0000,0000*59
 lng = -77.681114, lat = 43.086067 , altitude = 165.90 , speed = 0.01 , satellites = 10 , angle = 195.7000,
 fixquality = 2
-"""
+'''
